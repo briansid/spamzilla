@@ -19,7 +19,7 @@ with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as drive
 
     print('Export... Можете свернуть все окна')
 
-    with open('export.csv', 'w') as file:
+    with open('export.csv', 'w') as file, open('log.txt', 'w') as log:
         writer = csv.DictWriter(file, fieldnames=[
                                 'Domain', 'Source', 'TF', 'Ahrefs DR', 'Ahrefs RD', 'Age', 'SZ Score', 'Date Added', 'Expires'])
         writer.writeheader()
@@ -30,19 +30,23 @@ with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as drive
                 By.CSS_SELECTOR, 'tbody tr.expired-domains')
 
             for n, row in enumerate(rows):
-                row = {
-                    'Domain': row.find_element(By.CSS_SELECTOR, '[data-col-seq="1"]').text,
-                    'Source': row.find_element(By.CSS_SELECTOR, '[data-col-seq="data_source"] img').get_attribute('alt'),
-                    'TF': row.find_element(By.CSS_SELECTOR, '[data-col-seq="majestic_tf"] a').text,
-                    'Ahrefs DR': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_dr"] a').text,
-                    'Ahrefs RD': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_rd"]').text,
-                    'Age': row.find_element(By.CSS_SELECTOR, '[data-col-seq="age"]').text,
-                    'SZ Score': row.find_element(By.CSS_SELECTOR, '[data-col-seq="sz_score"] a').text,
-                    'Date Added': row.find_element(By.CSS_SELECTOR, '[data-col-seq="date_added"]').text,
-                    'Expires': row.find_element(By.CSS_SELECTOR, '[data-col-seq="expiry_date"]').text,
-                }
-                writer.writerow(row)
-
+                try:
+                    row = {
+                        'Domain': row.find_element(By.CSS_SELECTOR, '[data-col-seq="1"]').text,
+                        'Source': row.find_element(By.CSS_SELECTOR, '[data-col-seq="data_source"] img').get_attribute('alt'),
+                        'TF': row.find_element(By.CSS_SELECTOR, '[data-col-seq="majestic_tf"] a').text,
+                        'Ahrefs DR': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_dr"] a').text,
+                        'Ahrefs RD': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_rd"]').text,
+                        'Age': row.find_element(By.CSS_SELECTOR, '[data-col-seq="age"]').text,
+                        'SZ Score': row.find_element(By.CSS_SELECTOR, '[data-col-seq="sz_score"] a').text,
+                        'Date Added': row.find_element(By.CSS_SELECTOR, '[data-col-seq="date_added"]').text,
+                        'Expires': row.find_element(By.CSS_SELECTOR, '[data-col-seq="expiry_date"]').text,
+                    }
+                    writer.writerow(row)
+                except:
+                    log.write(table.get_attribute('outerHTML'))
+                    log.write('\n')
+                    continue
             try:
                 next_button = driver.find_element(By.CSS_SELECTOR, '.next a')
             except:
