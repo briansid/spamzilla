@@ -31,22 +31,24 @@ with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as drive
 
             for n, row in enumerate(rows):
                 try:
-                    row = {
-                        'Domain': row.find_element(By.CSS_SELECTOR, '[data-col-seq="1"]').text,
-                        'Source': row.find_element(By.CSS_SELECTOR, '[data-col-seq="data_source"] img').get_attribute('alt'),
-                        'TF': row.find_element(By.CSS_SELECTOR, '[data-col-seq="majestic_tf"] a').text,
-                        'Ahrefs DR': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_dr"] a').text,
-                        'Ahrefs RD': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_rd"]').text,
-                        'Age': row.find_element(By.CSS_SELECTOR, '[data-col-seq="age"]').text,
-                        'SZ Score': row.find_element(By.CSS_SELECTOR, '[data-col-seq="sz_score"] a').text,
-                        'Date Added': row.find_element(By.CSS_SELECTOR, '[data-col-seq="date_added"]').text,
-                        'Expires': row.find_element(By.CSS_SELECTOR, '[data-col-seq="expiry_date"]').text,
-                    }
-                    writer.writerow(row)
+                    ahrefs_dr = row.find_element(
+                        By.CSS_SELECTOR, '[data-col-seq="ahrefs_dr"] a').text
                 except:
-                    log.write(table.get_attribute('outerHTML'))
-                    log.write('\n')
-                    continue
+                    ahrefs_dr = row.find_element(
+                        By.CSS_SELECTOR, '[data-col-seq="ahrefs_dr"]').text
+
+                row = {
+                    'Domain': row.find_element(By.CSS_SELECTOR, '[data-col-seq="1"]').text,
+                    'Source': row.find_element(By.CSS_SELECTOR, '[data-col-seq="data_source"] img').get_attribute('alt'),
+                    'TF': row.find_element(By.CSS_SELECTOR, '[data-col-seq="majestic_tf"] a').text,
+                    'Ahrefs DR': ahrefs_dr,
+                    'Ahrefs RD': row.find_element(By.CSS_SELECTOR, '[data-col-seq="ahrefs_rd"]').text,
+                    'Age': row.find_element(By.CSS_SELECTOR, '[data-col-seq="age"]').text,
+                    'SZ Score': row.find_element(By.CSS_SELECTOR, '[data-col-seq="sz_score"] a').text,
+                    'Date Added': row.find_element(By.CSS_SELECTOR, '[data-col-seq="date_added"]').text,
+                    'Expires': row.find_element(By.CSS_SELECTOR, '[data-col-seq="expiry_date"]').text,
+                }
+                writer.writerow(row)
             try:
                 next_button = driver.find_element(By.CSS_SELECTOR, '.next a')
             except:
