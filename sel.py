@@ -5,11 +5,22 @@ from webdriver_manager.chrome import ChromeDriverManager
 import csv
 from time import sleep
 import sys
+import os
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()
 
 with webdriver.Chrome(service=Service(ChromeDriverManager().install())) as driver:
     driver.implicitly_wait(10)
     driver.get('https://www.spamzilla.io/account/login/')
+
+    if username := os.environ.get('SPAMZILLA_USERNAME'):
+        driver.find_element(
+            By.ID, 'loginform-email').send_keys(username)
+        driver.find_element(
+            By.ID, 'loginform-password').send_keys(os.environ['SPAMZILLA_PASSWORD'])
+        driver.find_element(By.CSS_SELECTOR, '[type="submit"]').click()
 
     input('Откройте таблицу и нажмите Enter (ctrl+c для выхода) ')
 
